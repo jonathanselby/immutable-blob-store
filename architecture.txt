@@ -1,0 +1,52 @@
+IMMUTABLE BLOB STORE — V0.1
+
+ untrusted bytes
+      |
+      v
+ +----------------------+
+ | bounded stream       |
+ | MaxBytes + 1         |
+ +----------+-----------+
+            |
+            v
+ +----------------------+
+ | temp file 0600       |
+ | SHA-256 in parallel  |
+ +----------+-----------+
+            |
+        oversize/cancel -----------------> delete temp / refuse
+            |
+            v
+       sha256:<digest>
+            |
+            v
+ +----------------------+
+ | strict ID/path       |
+ | digest only          |
+ +----------+-----------+
+            |
+            v
+ +----------------------+
+ | atomic hard-link     |
+ | create-if-absent     |
+ +-----+------------+---+
+       |            |
+    created      exists
+       |            |
+       |            v
+       |       verify existing
+       |            |
+       +------------+
+            |
+            v
+     immutable Blob
+
+ Retrieval:
+   ID -> strict validation -> full SHA-256 verify -> exact-byte copy
+
+ Browser delivery helper:
+   attachment + application/octet-stream + nosniff + no-store
+
+ Not owned here:
+   auth / roles / business metadata / malware scanning / media processing /
+   retention / evidence meaning / inline-render policy
